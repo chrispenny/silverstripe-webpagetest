@@ -281,6 +281,23 @@ class Result
      */
     public function hydrateRunResultsFromRunData(array $runs): void
     {
+        foreach ($runs as $run) {
+            if (property_exists($run, 'firstView')) {
+                $result = RunResult\Result::create();
+                $result->setIsRepeatView(0);
+                $result->hydrateFromContents($run->firstView);
+
+                $this->addRunResult($result);
+            }
+
+            if (property_exists($run, 'repeatView')) {
+                $result = RunResult\Result::create();
+                $result->setIsRepeatView(1);
+                $result->hydrateFromContents($run->repeatView);
+
+                $this->addRunResult($result);
+            }
+        }
     }
 
     /**
@@ -469,6 +486,25 @@ class Result
     public function setPacketLossRate(?string $packetLossRate): Result
     {
         $this->packetLossRate = $packetLossRate;
+
+        return $this;
+    }
+
+    /**
+     * @return array|RunResult\Result[]
+     */
+    public function getRunResults()
+    {
+        return $this->runResults;
+    }
+
+    /**
+     * @param RunResult\Result $runResult
+     * @return Result
+     */
+    public function addRunResult(RunResult\Result $runResult)
+    {
+        $this->runResults[] = $runResult;
 
         return $this;
     }

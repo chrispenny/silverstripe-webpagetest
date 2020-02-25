@@ -38,9 +38,9 @@ class Service
         $result->hydrateFromResponse($response);
 
         $model = Model::create();
-        $model->hydrateFromResult($result);
         $model->RequestUrl = $request->getUri();
         $model->TestedUrl = $request->getUrl();
+        $model->hydrateFromResult($result);
         $model->write();
 
         return $model;

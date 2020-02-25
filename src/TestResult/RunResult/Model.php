@@ -92,6 +92,34 @@ class Model extends DataObject
     private static $plural_name = 'WebPageTest Run Results';
 
     /**
+     * @param Result $result
+     */
+    public function hydrateFromResult(Result $result): void
+    {
+        $this->DomInteractive = $result->getDomInteractive();
+        $this->FirstContentfulPaint = $result->getFirstContentfulPaint();
+        $this->FirstLayout = $result->getFirstLayout();
+        $this->FirstMeaningfulPaint = $result->getFirstMeaningfulPaint();
+        $this->FirstPaint = $result->getFirstPaint();
+        $this->FullyLoaded = $result->getFullyLoaded();
+        $this->IsRepeatView = $result->getIsRepeatView();
+        $this->Responses200 = $result->getResponses200();
+        $this->Responses404 = $result->getResponses404();
+        $this->RunNumber = $result->getRunNumber();
+        $this->ScoreCache = $result->getScoreCache();
+        $this->ScoreCdn = $result->getScoreCdn();
+        $this->ScoreCombine = $result->getScoreCombine();
+        $this->ScoreCompress = $result->getScoreCompress();
+        $this->ScoreCookies = $result->getScoreCookies();
+        $this->ScoreETags = $result->getScoreETags();
+        $this->ScoreGzip = $result->getScoreGzip();
+        $this->ScoreKeepAlive = $result->getScoreKeepAlive();
+        $this->ScoreMinify = $result->getScoreMinify();
+        $this->ScoreProgressiveJpeg = $result->getScoreProgressiveJpeg();
+        $this->TimeToFirstByte = $result->getTimeToFirstByte();
+    }
+
+    /**
      * @param null $member
      * @param array $context
      * @return bool|int

@@ -18,6 +18,7 @@ use SilverStripe\Security\PermissionProvider;
  * @property string $DetailCsvUrl
  * @property string $JsonUrl
  * @property string $OwnerKey
+ * @property int $ProcessedStatus
  * @property string $ResultOverviewUrl
  * @property string $RequestUrl
  * @property int $StatusCode
@@ -175,20 +176,6 @@ class Model extends DataObject implements PermissionProvider
     }
 
     /**
-     * @param string $testId
-     * @return Model|null
-     */
-    public static function findByTestId(string $testId): ?Model
-    {
-        /** @var Model $model */
-        $model = static::get()
-            ->filter('TestId', $testId)
-            ->first();
-
-        return $model;
-    }
-
-    /**
      * @return array
      */
     public function providePermissions(): array
@@ -199,6 +186,16 @@ class Model extends DataObject implements PermissionProvider
             self::PERMISSION_PERFORMANCE_TEST_EDIT => 'Performance Tests - Edit',
             self::PERMISSION_PERFORMANCE_TEST_VIEW => 'Performance Tests - View',
         ];
+    }
+
+    /**
+     * @return DataObject
+     */
+    public function populateDefaults(): DataObject
+    {
+        $this->ProcessedStatus = self::PROCESSED_STATUS_PENDING;
+
+        return parent::populateDefaults();
     }
 
     /**
@@ -236,5 +233,19 @@ class Model extends DataObject implements PermissionProvider
     public function canView($member = null): bool
     {
         return Permission::check(self::PERMISSION_PERFORMANCE_TEST_VIEW);
+    }
+
+    /**
+     * @param string $testId
+     * @return Model|null
+     */
+    public static function findByTestId(string $testId): ?Model
+    {
+        /** @var Model $model */
+        $model = static::get()
+            ->filter('TestId', $testId)
+            ->first();
+
+        return $model;
     }
 }

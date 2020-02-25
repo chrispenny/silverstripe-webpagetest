@@ -137,20 +137,20 @@ class Result
             $errors[] = 'No "domInteractive" property provided';
         }
 
-        if (!property_exists($contents, 'firstLayout')) {
-            $errors[] = 'No "firstLayout" property provided';
-        }
-
-        if (!property_exists($contents, 'firstPaint')) {
-            $errors[] = 'No "firstPaint" property provided';
-        }
-
         if (!property_exists($contents, 'firstContentfulPaint')) {
             $errors[] = 'No "firstContentfulPaint" property provided';
         }
 
+        if (!property_exists($contents, 'firstLayout')) {
+            $errors[] = 'No "firstLayout" property provided';
+        }
+
         if (!property_exists($contents, 'firstMeaningfulPaint')) {
             $errors[] = 'No "firstMeaningfulPaint" property provided';
+        }
+
+        if (!property_exists($contents, 'firstPaint')) {
+            $errors[] = 'No "firstPaint" property provided';
         }
 
         if (!property_exists($contents, 'fullyLoaded')) {
@@ -163,6 +163,10 @@ class Result
 
         if (!property_exists($contents, 'responses_404')) {
             $errors[] = 'No "responses_404" property provided';
+        }
+
+        if (!property_exists($contents, 'run')) {
+            $errors[] = 'No "run" property provided';
         }
 
         if (!property_exists($contents, 'score_cache')) {
@@ -217,13 +221,14 @@ class Result
         }
 
         $this->setDomInteractive($contents->domInteractive);
-        $this->setFirstLayout($contents->firstLayout);
-        $this->setFirstPaint($contents->firstPaint);
         $this->setFirstContentfulPaint($contents->firstContentfulPaint);
+        $this->setFirstLayout($contents->firstLayout);
         $this->setFirstMeaningfulPaint($contents->firstMeaningfulPaint);
+        $this->setFirstPaint($contents->firstPaint);
         $this->setFullyLoaded($contents->fullyLoaded);
         $this->setResponses200($contents->responses_200);
         $this->setResponses404($contents->responses_404);
+        $this->setRunNumber($contents->run);
         $this->setScoreCache($contents->score_cache);
         $this->setScoreCdn($contents->score_cdn);
         $this->setScoreCombine($contents->score_combine);
@@ -349,7 +354,7 @@ class Result
     /**
      * @return int|null
      */
-    public function getisRepeatView(): ?int
+    public function getIsRepeatView(): ?int
     {
         return $this->isRepeatView;
     }

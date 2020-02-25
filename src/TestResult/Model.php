@@ -5,6 +5,7 @@ namespace ChrisPenny\WebPageTest\TestResult;
 use ChrisPenny\WebPageTest\Submission;
 use ChrisPenny\WebPageTest\TestResult\RunResult;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\HasManyList;
 use SilverStripe\Security\Permission;
 
 /**
@@ -16,21 +17,18 @@ use SilverStripe\Security\Permission;
  * @property int $BandwidthUp
  * @property int $Completed
  * @property string $Connectivity
- * @property int $FirstViewId
  * @property int $FirstViewOnly
  * @property string $Latency
  * @property string $Location
  * @property int $Mobile
  * @property string $PacketLossRate
- * @property int $RepeatView
  * @property int $StatusCode
  * @property string $StatusText
  * @property int $TestsExpected
  * @property string $TestId
  * @property int $TestRuns
  * @property string $Url
- * @method RunResult\Model FirstView()
- * @method RunResult\Model RepeatView()
+ * @method HasManyList|RunResult\Model[] RunResults()
  */
 class Model extends DataObject
 {
@@ -128,6 +126,13 @@ class Model extends DataObject
         $this->PacketLossRate = $result->getPacketLossRate();
         $this->TestRuns = $result->getTestRuns();
         $this->Url = $result->getUrl();
+
+        foreach ($result->getRunResults() as $runResult) {
+            $runModel = RunResult\Model::create();
+            $runModel->hydrateFromResult($runResult);
+
+            $this->RunResults()->add($runModel);
+        }
     }
 
     /**
