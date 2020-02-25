@@ -2,9 +2,10 @@
 
 namespace ChrisPenny\WebPageTest\TestResult;
 
-use ChrisPenny\WebPageTest\SubmitTest;
+use ChrisPenny\WebPageTest\Submission;
 use Exception;
 use InvalidArgumentException;
+use SilverStripe\Core\Injector\Injectable;
 
 /**
  * Class Service
@@ -13,14 +14,16 @@ use InvalidArgumentException;
  */
 class Service
 {
+    use Injectable;
+
     /**
      * @param string $testId
      * @return Model
      * @throws Exception
      */
-    public function requestResult(string $testId): Model
+    public function updateTestResult(string $testId): Model
     {
-        $runTest = SubmitTest\Model::findByTestId($testId);
+        $runTest = Submission\Model::findByTestId($testId);
 
         if ($runTest === null) {
             throw new InvalidArgumentException(sprintf('RunTest result with ID "%s" not found', $testId));

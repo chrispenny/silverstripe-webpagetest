@@ -1,15 +1,15 @@
 <?php
 
-namespace ChrisPenny\WebPageTest\SubmitTest;
+namespace ChrisPenny\WebPageTest\Submission;
 
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\BuildTask;
 
 /**
- * Class TestTask
+ * Class Task
  *
  * @codeCoverageIgnore
- * @package App\Tasks
+ * @package ChrisPenny\WebPageTest\Submission
  */
 class Task extends BuildTask
 {
@@ -18,14 +18,14 @@ class Task extends BuildTask
      *
      * @var string
      */
-    private static $segment = 'webpagetest-runtest';
+    private static $segment = 'webpagetest-submit-test';
 
     /**
      * @return string
      */
     public function getDescription(): string
     {
-        return 'WebPageTest - Run Test';
+        return 'WebPageTest - Submit Test';
     }
 
     /**
@@ -44,7 +44,7 @@ class Task extends BuildTask
      */
     public function run($request): void
     {
-        $service = new Service();
+        $service = Service::create();
         $service->requestTest();
     }
 }

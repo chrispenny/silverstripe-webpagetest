@@ -1,6 +1,6 @@
 ---
 Name: webpagetest_runtest
 ---
-ChrisPenny\WebPageTest\SubmitTest\Request:
+ChrisPenny\WebPageTest\Submission\Request:
   base_url: http://www.webpagetest.org/runtest.php
   format: json

@@ -2,9 +2,10 @@
 
 namespace ChrisPenny\WebPageTest\TestResult;
 
-use ChrisPenny\WebPageTest\SubmitTest;
+use ChrisPenny\WebPageTest\Submission;
 use ChrisPenny\WebPageTest\TestResult\RunResult;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Permission;
 
 /**
  * Class Model
@@ -56,20 +57,17 @@ class Model extends DataObject
     ];
 
     /**
-     * For now at least, we're only supporting keeping the relationship for the "average" runs.
-     *
      * @var array
      */
-    private static $has_one = [
-        'FirstView' => RunResult\Model::class,
-        'RepeatView' => RunResult\Model::class,
+    private static $has_many = [
+        'RunResults' => RunResult\Model::class,
     ];
 
     /**
      * @var array
      */
     private static $belongs_to = [
-        'SubmittedTest' => SubmitTest\Model::class . '.TestResult',
+        'Submission' => Submission\Model::class . '.TestResult',
     ];
 
     /**
@@ -80,12 +78,12 @@ class Model extends DataObject
     /**
      * @var string
      */
-    private static $singular_name = 'Test Result';
+    private static $singular_name = 'WebPageTest Result';
 
     /**
      * @var string
      */
-    private static $plural_name = 'Test Results';
+    private static $plural_name = 'WebPageTest Results';
 
     /**
      * @param Result $result
@@ -101,6 +99,8 @@ class Model extends DataObject
 
             return;
         }
+
+        $this->hydrateCompletedResult($result);
     }
 
     /**
@@ -160,5 +160,42 @@ class Model extends DataObject
         $new->TestId = $testId;
 
         return $new;
+    }
+
+    /**
+     * @param null $member
+     * @param array $context
+     * @return bool|int
+     */
+    public function canCreate($member = null, $context = array()): bool
+    {
+        return false;
+    }
+
+    /**
+     * @param null $member
+     * @return bool|int
+     */
+    public function canDelete($member = null): bool
+    {
+        return false;
+    }
+
+    /**
+     * @param null $member
+     * @return bool|int
+     */
+    public function canEdit($member = null): bool
+    {
+        return false;
+    }
+
+    /**
+     * @param null $member
+     * @return bool|int
+     */
+    public function canView($member = null): bool
+    {
+        return Permission::check(Submission\Model::PERMISSION_PERFORMANCE_TEST_VIEW);
     }
 }

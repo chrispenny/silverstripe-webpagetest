@@ -1,8 +1,8 @@
 <?php
 
-namespace ChrisPenny\WebPageTest\SubmitTest;
+namespace ChrisPenny\WebPageTest\Submission;
 
-use ChrisPenny\WebPageTest\Connectors\ApiConnector;
+use ChrisPenny\WebPageTest\Api\Client;
 use GuzzleHttp\Psr7\Request as BaseRequest;
 use InvalidArgumentException;
 use SilverStripe\Core\Config\Configurable;
@@ -448,11 +448,11 @@ class Request extends BaseRequest
     public function __construct()
     {
         parent::__construct(
-            ApiConnector::METHOD_GET,
+            Client::METHOD_GET,
             null,
             $this->getHeaders(),
             $this->getBody(),
-            ApiConnector::VERSION
+            Client::VERSION
         );
     }
 
@@ -947,9 +947,9 @@ class Request extends BaseRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getFormat(): string
+    public function getFormat(): ?string
     {
         return $this->format;
     }

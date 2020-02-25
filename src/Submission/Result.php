@@ -1,6 +1,6 @@
 <?php
 
-namespace ChrisPenny\WebPageTest\SubmitTest;
+namespace ChrisPenny\WebPageTest\Submission;
 
 use GuzzleHttp\Psr7\Response;
 use SilverStripe\Core\Extensible;
@@ -55,7 +55,7 @@ class Result
     /**
      * @var string|null
      */
-    private $userUrl;
+    private $resultOverviewUrl;
 
     /**
      * @var string|null
@@ -142,7 +142,7 @@ class Result
         }
 
         if (!property_exists($data, 'userUrl')) {
-            $errors[] = 'No "userUrl" property provided';
+            $errors[] = 'No "userUrl" (result overview url) property provided';
         }
 
         if (!property_exists($data, 'xmlUrl')) {
@@ -165,7 +165,7 @@ class Result
         $this->setOwnerKey($data->ownerKey);
         $this->setSummaryCsvUrl($data->summaryCSV);
         $this->setTestId($data->testId);
-        $this->setUserUrl($data->userUrl);
+        $this->setResultOverviewUrl($data->userUrl);
         $this->setXmlUrl($data->xmlUrl);
 
         $this->invokeWithExtensions('updateResultAfterHydration', $this);
@@ -309,18 +309,18 @@ class Result
     /**
      * @return string|null
      */
-    public function getUserUrl(): ?string
+    public function getResultOverviewUrl(): ?string
     {
-        return $this->userUrl;
+        return $this->resultOverviewUrl;
     }
 
     /**
-     * @param string|null $userUrl
+     * @param string|null $resultOverviewUrl
      * @return Result
      */
-    public function setUserUrl(?string $userUrl): Result
+    public function setResultOverviewUrl(?string $resultOverviewUrl): Result
     {
-        $this->userUrl = $userUrl;
+        $this->resultOverviewUrl = $resultOverviewUrl;
 
         return $this;
     }

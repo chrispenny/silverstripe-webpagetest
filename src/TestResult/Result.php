@@ -2,6 +2,7 @@
 
 namespace ChrisPenny\WebPageTest\TestResult;
 
+use ChrisPenny\WebPageTest\TestResult\RunResult;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use stdClass;
@@ -65,6 +66,11 @@ class Result
      * @var string|null
      */
     private $packetLossRate;
+
+    /**
+     * @var array|RunResult\Result[]
+     */
+    private $runResults = [];
 
     /**
      * @var string|int|null
@@ -243,10 +249,16 @@ class Result
             $errors[] = 'No "url" property provided';
         }
 
+        if (!property_exists($data, 'runs')) {
+            $errors[] = 'No "runs" property provided';
+        }
+
         // If we're missing any of the above fields, then we can't proceed any further
         if (count($errors) > 0) {
             $this->setStatusCode(500);
             $this->setStatusText(implode("\n", $errors));
+
+            return;
         }
 
         $this->setBandwidthDown($data->bwDown);
@@ -260,6 +272,15 @@ class Result
         $this->setPacketLossRate($data->plr);
         $this->setTestRuns($data->testRuns);
         $this->setUrl($data->url);
+
+        $this->hydrateRunResultsFromRunData(get_object_vars($data->runs));
+    }
+
+    /**
+     * @param array $runs
+     */
+    public function hydrateRunResultsFromRunData(array $runs): void
+    {
     }
 
     /**

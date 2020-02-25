@@ -1,8 +1,9 @@
 <?php
 
-namespace ChrisPenny\WebPageTest\SubmitTest;
+namespace ChrisPenny\WebPageTest\Submission;
 
-use ChrisPenny\WebPageTest\Connectors\ApiConnector;
+use ChrisPenny\WebPageTest\Api\Client;
+use SilverStripe\Core\Injector\Injectable;
 
 /**
  * Class Service
@@ -11,6 +12,8 @@ use ChrisPenny\WebPageTest\Connectors\ApiConnector;
  */
 class Service
 {
+    use Injectable;
+
     /**
      * When using this method, you can optionally pass in your own Request (which you may have changed a bunch of
      * settings on), or, if you leave it null, then it will generate a Request from your current configuration settings
@@ -28,7 +31,7 @@ class Service
             $request = Request::create()->hydrateFromConfiguration();
         }
 
-        $connector = ApiConnector::create();
+        $connector = Client::create();
         $response = $connector->send($request);
 
         $result = Result::create();
@@ -36,7 +39,8 @@ class Service
 
         $model = Model::create();
         $model->hydrateFromResult($result);
-        $model->TestedUrl = $request->getUri();
+        $model->RequestUrl = $request->getUri();
+        $model->TestedUrl = $request->getUrl();
         $model->write();
 
         return $model;
