@@ -5,8 +5,11 @@ namespace ChrisPenny\WebPageTest\Submission;
 use ChrisPenny\WebPageTest\TestResult;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionProvider;
@@ -73,6 +76,20 @@ class Model extends DataObject implements PermissionProvider
     ];
 
     /**
+     * @var array
+     */
+    private static $owns = [
+        'TestResult',
+    ];
+
+    /**
+     * @var array
+     */
+    private static $cascade_delete = [
+        'TestResult',
+    ];
+
+    /**
      * @var string
      */
     private static $table_name = 'WebPageTestSubmission';
@@ -91,6 +108,18 @@ class Model extends DataObject implements PermissionProvider
      * @var array
      */
     private static $summary_fields = [
+        'TestedUrl',
+        'Created',
+        'getProcessedStatusSummaryField' => 'Processed Status',
+        'StatusCode',
+        'StatusText',
+        'TestId',
+    ];
+
+    /**
+     * @var array
+     */
+    private static $searchable_fields = [
         'TestedUrl',
         'Created',
         'StatusCode',
@@ -153,6 +182,19 @@ class Model extends DataObject implements PermissionProvider
         $testedUrlField->setDescription('The URL that you requested be tested');
         $requestUrlField->setDescription('The full test request that was sent to WebPageTest');
 
+        if ($this->TestResult() === null || !$this->TestResult()->exists()) {
+            return $fields;
+        }
+
+        $config = GridFieldConfig_RecordViewer::create();
+
+        $gridField = GridField::create('Results', 'Results', ArrayList::create([$this->TestResult()]), $config);
+
+        $fields->addFieldToTab(
+            'Root.Result',
+            $gridField
+        );
+
         return $fields;
     }
 
@@ -196,6 +238,14 @@ class Model extends DataObject implements PermissionProvider
         $this->ProcessedStatus = self::PROCESSED_STATUS_PENDING;
 
         return parent::populateDefaults();
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessedStatusSummaryField(): string
+    {
+        return self::PROCESSED_STATUSES[$this->ProcessedStatus];
     }
 
     /**

@@ -77,6 +77,13 @@ class Model extends DataObject
     ];
 
     /**
+     * @var array
+     */
+    private static $owned_by = [
+        'TestResult',
+    ];
+
+    /**
      * @var string
      */
     private static $table_name = 'WebPageTestRunResult';
@@ -90,6 +97,35 @@ class Model extends DataObject
      * @var string
      */
     private static $plural_name = 'WebPageTest Run Results';
+
+    /**
+     * @var array
+     */
+    private static $summary_fields = [
+        'getViewSummaryField' => 'View',
+        'RunNumber',
+        'TimeToFirstByte',
+        'FirstContentfulPaint',
+        'FirstMeaningfulPaint',
+    ];
+
+    /**
+     * @var array
+     */
+    private static $searchable_fields = [
+        'RunNumber',
+    ];
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $fields->removeByName([
+            'TestResultID',
+        ]);
+
+        return $fields;
+    }
 
     /**
      * @param Result $result
@@ -117,6 +153,16 @@ class Model extends DataObject
         $this->ScoreMinify = $result->getScoreMinify();
         $this->ScoreProgressiveJpeg = $result->getScoreProgressiveJpeg();
         $this->TimeToFirstByte = $result->getTimeToFirstByte();
+    }
+
+    /**
+     * @return string
+     */
+    public function getViewSummaryField(): string
+    {
+        return $this->IsRepeatView
+            ? 'Repeat view'
+            : 'First view';
     }
 
     /**

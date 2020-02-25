@@ -64,8 +64,29 @@ class Model extends DataObject
     /**
      * @var array
      */
+    private static $owns = [
+        'RunResults',
+    ];
+
+    /**
+     * @var array
+     */
+    private static $cascade_delete = [
+        'RunResults',
+    ];
+
+    /**
+     * @var array
+     */
     private static $belongs_to = [
         'Submission' => Submission\Model::class . '.TestResult',
+    ];
+
+    /**
+     * @var array
+     */
+    private static $owned_by = [
+        'Submission',
     ];
 
     /**
@@ -82,6 +103,16 @@ class Model extends DataObject
      * @var string
      */
     private static $plural_name = 'WebPageTest Results';
+
+    /**
+     * @var array
+     */
+    private static $summary_fields = [
+        'StatusCode',
+        'StatusText',
+        'Completed',
+        'BehindCount',
+    ];
 
     /**
      * @param Result $result
@@ -108,6 +139,18 @@ class Model extends DataObject
     {
         $this->BehindCount = $result->getBehindCount();
         $this->TestsExpected = $result->getTestsExpected();
+        $this->BandwidthDown = null;
+        $this->BandwidthUp = null;
+        $this->BehindCount = null;
+        $this->Completed = null;
+        $this->Connectivity = null;
+        $this->FirstViewOnly = null;
+        $this->Latency = null;
+        $this->Location = null;
+        $this->Mobile = null;
+        $this->PacketLossRate = null;
+        $this->TestRuns = null;
+        $this->Url = null;
     }
 
     /**
@@ -117,6 +160,7 @@ class Model extends DataObject
     {
         $this->BandwidthDown = $result->getBandwidthDown();
         $this->BandwidthUp = $result->getBandwidthUp();
+        $this->BehindCount = null;
         $this->Completed = $result->getCompleted();
         $this->Connectivity = $result->getConnectivity();
         $this->FirstViewOnly = $result->getFirstViewOnly();
@@ -124,8 +168,13 @@ class Model extends DataObject
         $this->Location = $result->getLocation();
         $this->Mobile = $result->getMobile();
         $this->PacketLossRate = $result->getPacketLossRate();
+        $this->TestsExpected = null;
         $this->TestRuns = $result->getTestRuns();
         $this->Url = $result->getUrl();
+
+        foreach ($this->RunResults() as $runResult) {
+            $runResult->delete();
+        }
 
         foreach ($result->getRunResults() as $runResult) {
             $runModel = RunResult\Model::create();
