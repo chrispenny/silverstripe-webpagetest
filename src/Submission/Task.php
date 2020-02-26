@@ -33,8 +33,8 @@ class Task extends BuildTask
      * using the free service, then your request will go into a queue, and it will be processed when you're at the front
      * of that queue.
      *
-     * The tests then (of course) take a while to complete. This is why we have delayed and separate Tasks/etc for
-     * retrieving the data for the tests.
+     * The tests then (of course) take a while to complete. This is why we have a separate Task for retrieving the data
+     * for the tests.
      *
      * This Task is only going to send a request for your test to be queued. A corresponding DB record will also be
      * created. You can see the history of them in the CMS.
