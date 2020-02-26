@@ -1,10 +1,27 @@
 # silverstripe-webpagetest
 
+The goal of this module is to give you a way to queue and view WebPageTest performance tests. This is still early days
+though - we have some basic functionality, but this definitely isn't replacing a paid for testing service (at least
+not yet).
+
 - [Installation](#installation)
 - [Using the dev/tasks](#using-the-devtasks)
 - [Viewing your submissions and results](#viewing-your-submissions-and-results)
 - [Supported request configuration](docs/available-config.md)
 - [Using the Services](docs/using-the-services.md)
+
+## Out of box
+
+- Provides Request and Service classes that you can use to queue and consume WebPageTest performance test results.
+- Provides dev/tasks that can be used to queue and consume WebPageTest performance test results on a schedule.
+- Basic ModelAdmin to view your submissions and WebPageTest performance test results.
+
+## Still to come
+
+- Reports!
+- Graphs?
+- Consume more of the performance test result data
+- Unit tests (... forgive me)
 
 ## Installation
 
