@@ -1,9 +1,13 @@
+# Available config
+
 `ChrisPenny\WebPageTest\Submission\Request` has the following configurations available. All of these match the
 respective request param that WebPageTest accepts:
 https://sites.google.com/a/webpagetest.org/docs/advanced-features/webpagetest-restful-apis
 
 You can also view the property declarations in `ChrisPenny\WebPageTest\Submission\Request` for a description of what
 each option does, and what its expected value type is. 
+
+## Available config keys
 
 ```
 affinity
