@@ -1,6 +1,6 @@
 {
   "name": "chrispenny/silverstripe-webpagetest",
-  "description": "Provide tasks to submit tests to WebPageTest. Provides reports on test completions",
+  "description": "Submit performance test requests to WebPageTest, and consume the results",
   "type": "silverstripe-vendormodule",
   "keywords": [
     "webpagetest", "performance", "testing", "silverstripe"
