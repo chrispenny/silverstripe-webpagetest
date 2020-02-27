@@ -21,7 +21,6 @@ not yet).
 - Reports!
 - Graphs?
 - Consume more of the performance test result data
-- Unit tests (... forgive me)
 
 ## Installation
 
