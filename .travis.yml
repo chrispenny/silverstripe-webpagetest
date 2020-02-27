@@ -9,9 +9,9 @@ env:
 matrix:
   include:
     - php: 7.1
-      env: DB=MYSQL PHPUNIT_COVERAGE_TEST=1
+      env: DB=MYSQL RECIPE_VERSION=4.4.x-dev PHPUNIT_COVERAGE_TEST=1
     - php: 7.3
-      env: DB=MYSQL PHPUNIT_COVERAGE_TEST=1
+      env: DB=MYSQL RECIPE_VERSION=4.5.x-dev PHPUNIT_TEST=1
 
 before_script:
   # Init PHP
@@ -20,7 +20,7 @@ before_script:
 
   # Install composer dependencies
   - composer validate
-  - composer require --no-update silverstripe/recipe-cms:1.0.x-dev
+  - composer require --no-update silverstripe/recipe-cms:"$RECIPE_VERSION"
   - composer install --prefer-dist --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
 
 script:
