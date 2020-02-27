@@ -2,7 +2,7 @@
 
 namespace ChrisPenny\WebPageTest\Submission;
 
-use ChrisPenny\WebPageTest\Api\Client;
+use ChrisPenny\WebPageTest\Api\Connector;
 use GuzzleHttp\Psr7\Request as BaseRequest;
 use InvalidArgumentException;
 use SilverStripe\Core\Config\Configurable;
@@ -448,11 +448,11 @@ class Request extends BaseRequest
     public function __construct()
     {
         parent::__construct(
-            Client::METHOD_GET,
+            Connector::METHOD_GET,
             null,
             $this->getHeaders(),
             $this->getBody(),
-            Client::VERSION
+            Connector::VERSION
         );
     }
 

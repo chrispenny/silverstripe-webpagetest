@@ -2,8 +2,9 @@
 
 namespace ChrisPenny\WebPageTest\Submission;
 
-use ChrisPenny\WebPageTest\Api\Client;
+use ChrisPenny\WebPageTest\Api\Connector;
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
 
 /**
  * Class Service
@@ -31,7 +32,7 @@ class Service
             $request = Request::create()->hydrateFromConfiguration();
         }
 
-        $connector = Client::create();
+        $connector = Injector::inst()->get(Connector::class);
         $response = $connector->send($request);
 
         $result = Result::create();
