@@ -2,10 +2,12 @@
 
 namespace ChrisPenny\WebPageTest\TestResult;
 
+use ChrisPenny\WebPageTest\Api\Connector;
 use ChrisPenny\WebPageTest\Submission;
 use Exception;
 use InvalidArgumentException;
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
 
 /**
  * Class Service
@@ -33,14 +35,13 @@ class Service
             throw new InvalidArgumentException('Unable to fetch test results, as there is no JsonUrl');
         }
 
-        $response = file_get_contents($testSubmission->JsonUrl);
+        $request = Request::create($testSubmission->JsonUrl);
 
-        if (strlen($response) === 0) {
-            throw new Exception('Received no file contents from JsonUrl');
-        }
+        $connector = Injector::inst()->get(Connector::class);
+        $response = $connector->send($request);
 
         $result = Result::create();
-        $result->hydrateFromPayload($response);
+        $result->hydrateFromResponse($response);
 
         $testResult = Model::findOrCreate($testId);
         $testResult->hydrateFromResult($result);

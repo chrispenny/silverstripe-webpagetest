@@ -45,13 +45,13 @@ class ServiceTest extends SapphireTest
      */
     public function testPendingTestResult(): void
     {
-        $mock = file_get_contents(__DIR__ . '/../resources/mocks/pending-test-result.json');
+        $mock = file_get_contents(__DIR__ . '/../resources/mocks/test-submission.json');
 
         $headers = [
             'Content-Type' => 'application/json;charset=utf-8',
         ];
 
-        $response = new Response(100, $headers, $mock);
+        $response = new Response(200, $headers, $mock);
 
         $this->mock->append($response);
 
@@ -59,7 +59,7 @@ class ServiceTest extends SapphireTest
         $model = $service->requestTest();
 
         $this->assertNotNull($model);
-        $this->assertEquals(100, $model->StatusCode);
-        $this->assertEquals('Test Started 13 seconds ago', $model->StatusText);
+        $this->assertEquals(200, $model->StatusCode);
+        $this->assertEquals('Ok', $model->StatusText);
     }
 }

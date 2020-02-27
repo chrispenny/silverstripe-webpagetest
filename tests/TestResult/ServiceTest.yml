@@ -1,0 +1,6 @@
+ChrisPenny\WebPageTest\Submission\Model:
+  one:
+    JsonUrl: http://www.webpagetest.org/jsonResult.php?test=200225_WT_09cde816935c6462c8f62d6bd098677e
+    TestId: 200225_WT_09cde816935c6462c8f69d6bd098677e
+    StatusCode: 100
+    StatusText: Test Started 13 seconds ago

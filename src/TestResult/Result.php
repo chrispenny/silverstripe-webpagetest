@@ -3,6 +3,7 @@
 namespace ChrisPenny\WebPageTest\TestResult;
 
 use ChrisPenny\WebPageTest\TestResult\RunResult;
+use GuzzleHttp\Psr7\Response;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use stdClass;
@@ -103,12 +104,24 @@ class Result
     private $url;
 
     /**
-     * @param string $payload
+     * @param Response $response
      * @return void
      */
-    public function hydrateFromPayload(string $payload): void
+    public function hydrateFromResponse(Response $response): void
     {
-        $contents = json_decode($payload);
+        /** @var string $contents */
+        $contents = $response->getBody()->getContents();
+
+        // We can't do anything if there is no response contents
+        if (strlen($contents) === 0) {
+            $this->setStatusCode(500);
+            $this->setStatusText('No response content available');
+
+            return;
+        }
+
+        /** @var stdClass $contents */
+        $contents = json_decode($contents);
         $errors = [];
 
         if (!property_exists($contents, 'statusCode')) {
@@ -117,6 +130,10 @@ class Result
 
         if (!property_exists($contents, 'statusText')) {
             $errors[] = 'No "statusText" property provided';
+        }
+
+        if (!property_exists($contents, 'data')) {
+            $errors[] = 'No "data" property provided';
         }
 
         $this->invokeWithExtensions('updateErrorsBeforeTopLevelFailure', $errors);
@@ -133,6 +150,8 @@ class Result
         $this->setStatusCode($contents->statusCode);
         $this->setStatusText($contents->statusText);
 
+        $data = $contents->data;
+
         // Status codes in the 1xx and 2xx ranges are valid, anything outside of those are an error
         if ($this->getStatusCode() < 100 || $this->getStatusCode() >= 300) {
             return;
@@ -140,42 +159,30 @@ class Result
 
         // Status codes in the 1xx indicate that the test is still processing
         if ($this->getStatusCode() >= 100 && $this->getStatusCode() < 200) {
-            $this->hydratePendingResult($contents);
+            $this->hydratePendingResult($data);
 
             $this->invokeWithExtensions('updateResultAfterHydratePending', $this);
 
             return;
         }
 
-        $this->hydrateCompletedResult($contents);
+        $this->hydrateCompletedResult($data);
 
         $this->invokeWithExtensions('updateResultAfterHydrateCompleted', $this);
     }
 
     /**
-     * @param stdClass $contents
+     * @param stdClass $data
      */
-    protected function hydratePendingResult(stdClass $contents): void
+    protected function hydratePendingResult(stdClass $data): void
     {
-        if (!property_exists($contents, 'data')) {
-            $this->setStatusText('No "data" property provided');
-
-            return;
-        }
-
-        /** @var stdClass $data */
-        $data = $contents->data;
         $errors = [];
 
-        if (!property_exists($contents, 'testId')) {
+        if (!property_exists($data, 'testId')) {
             $errors[] = 'No "testId" property provided';
         }
 
-        if (!property_exists($contents, 'behindCount')) {
-            $errors[] = 'No "behindCount" property provided';
-        }
-
-        if (!property_exists($contents, 'testsExpected')) {
+        if (!property_exists($data, 'testsExpected')) {
             $errors[] = 'No "testsExpected" property provided';
         }
 
@@ -185,24 +192,19 @@ class Result
             $this->setStatusText(implode("\n", $errors));
         }
 
+        if (property_exists($data, 'behindCount')) {
+            $this->setBehindCount($data->behindCount);
+        }
+
         $this->setTestId($data->testId);
-        $this->setBehindCount($data->behindCount);
         $this->setTestsExpected($data->testsExpected);
     }
 
     /**
-     * @param stdClass $contents
+     * @param stdClass $data
      */
-    protected function hydrateCompletedResult(stdClass $contents): void
+    protected function hydrateCompletedResult(stdClass $data): void
     {
-        if (!property_exists($contents, 'data')) {
-            $this->setStatusText('No "data" property provided');
-
-            return;
-        }
-
-        /** @var stdClass $data */
-        $data = $contents->data;
         $errors = [];
 
         if (!property_exists($data, 'bwDown')) {
