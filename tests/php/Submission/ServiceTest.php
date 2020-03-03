@@ -21,7 +21,7 @@ class ServiceTest extends SapphireTest
     /**
      * @var string
      */
-    protected $usesDatabase;
+    protected $usesDatabase = true;
 
     /**
      * @var MockHandler
