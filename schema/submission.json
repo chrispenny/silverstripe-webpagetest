@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "detailCSV": {
+          "type": "string"
+        },
+        "jsonUrl": {
+          "type": "string"
+        },
+        "ownerKey": {
+          "type": "string"
+        },
+        "summaryCSV": {
+          "type": "string"
+        },
+        "testId": {
+          "type": "string"
+        },
+        "userUrl": {
+          "type": "string"
+        },
+        "xmlUrl": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "detailCSV",
+        "jsonUrl",
+        "ownerKey",
+        "summaryCSV",
+        "testId",
+        "userUrl",
+        "xmlUrl"
+      ]
+    },
+    "statusCode": {
+      "type": "integer"
+    },
+    "statusText": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "data",
+    "statusCode",
+    "statusText"
+  ],
+  "additionalProperties": false
+}
