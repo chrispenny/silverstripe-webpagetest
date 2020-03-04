@@ -4,21 +4,8 @@
   "properties": {
     "data": {
       "type": "object",
-      "properties": {
-        "behindCount": {
-          "type": "integer"
-        },
-        "testId": {
-          "type": "string"
-        },
-        "testsExpected": {
-          "type": "integer"
-        }
-      },
-      "required": [
-        "testId",
-        "testsExpected"
-      ]
+      "properties": {},
+      "required": []
     },
     "statusCode": {
       "type": "integer"

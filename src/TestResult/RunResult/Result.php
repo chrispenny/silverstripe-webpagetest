@@ -2,6 +2,8 @@
 
 namespace ChrisPenny\WebPageTest\TestResult\RunResult;
 
+use ChrisPenny\WebPageTest\Api;
+use Opis\JsonSchema;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use stdClass;
@@ -131,6 +133,20 @@ class Result
      */
     public function hydrateFromContents(stdClass $contents): void
     {
+        // Validate that we have a valid basic response with codes and data
+        $schema = JsonSchema\Schema::fromJsonString(file_get_contents(__DIR__ . '/../../../schema/result-run.json'));
+
+        $validator = new JsonSchema\Validator();
+
+        /** @var JsonSchema\ValidationResult $result */
+        $result = $validator->schemaValidation($contents, $schema);
+
+        if (!$result->isValid()) {
+            $this->setStatusText(Api\Helper::getValidationResultsAsJson($result));
+
+            return;
+        }
+
         $errors = [];
 
         if (!property_exists($contents, 'domInteractive')) {

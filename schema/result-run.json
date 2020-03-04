@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "domInteractive": {
+      "type": "integer"
+    },
+    "firstContentfulPaint": {
+      "type": "integer"
+    },
+    "firstLayout": {
+      "type": "integer"
+    },
+    "firstMeaningfulPaint": {
+      "type": "integer"
+    },
+    "firstPaint": {
+      "type": "integer"
+    },
+    "fullyLoaded": {
+      "type": "integer"
+    },
+    "responses_200": {
+      "type": "integer"
+    },
+    "responses_404": {
+      "type": "integer"
+    },
+    "run": {
+      "type": "integer"
+    },
+    "score_cache": {
+      "type": "integer"
+    },
+    "score_cdn": {
+      "type": "integer"
+    },
+    "score_combine": {
+      "type": "integer"
+    },
+    "score_compress": {
+      "type": "integer"
+    },
+    "score_cookies": {
+      "type": "integer"
+    },
+    "score_etags": {
+      "type": "integer"
+    },
+    "score_gzip": {
+      "type": "integer"
+    },
+    "score_keep-alive": {
+      "type": "integer"
+    },
+    "score_minify": {
+      "type": "integer"
+    },
+    "score_progressive_jpeg": {
+      "type": "integer"
+    },
+    "TTFB": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "domInteractive",
+    "firstContentfulPaint",
+    "firstLayout",
+    "firstMeaningfulPaint",
+    "firstPaint",
+    "fullyLoaded",
+    "responses_200",
+    "responses_404",
+    "run",
+    "score_cache",
+    "score_cdn",
+    "score_combine",
+    "score_compress",
+    "score_cookies",
+    "score_etags",
+    "score_gzip",
+    "score_keep-alive",
+    "score_minify",
+    "score_progressive_jpeg",
+    "TTFB"
+  ]
+}

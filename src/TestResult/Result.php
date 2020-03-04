@@ -2,8 +2,10 @@
 
 namespace ChrisPenny\WebPageTest\TestResult;
 
+use ChrisPenny\WebPageTest\Api;
 use ChrisPenny\WebPageTest\TestResult\RunResult;
 use GuzzleHttp\Psr7\Response;
+use Opis\JsonSchema;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use stdClass;
@@ -122,26 +124,18 @@ class Result
 
         /** @var stdClass $contents */
         $contents = json_decode($contents);
-        $errors = [];
 
-        if (!property_exists($contents, 'statusCode')) {
-            $errors[] = 'No "statusCode" property provided';
-        }
+        // Validate that we have a valid basic response with codes and data
+        $schema = JsonSchema\Schema::fromJsonString(file_get_contents(__DIR__ . '/../../schema/status.json'));
 
-        if (!property_exists($contents, 'statusText')) {
-            $errors[] = 'No "statusText" property provided';
-        }
+        $validator = new JsonSchema\Validator();
 
-        if (!property_exists($contents, 'data')) {
-            $errors[] = 'No "data" property provided';
-        }
+        /** @var JsonSchema\ValidationResult $result */
+        $result = $validator->schemaValidation($contents, $schema);
 
-        $this->invokeWithExtensions('updateErrorsBeforeTopLevelFailure', $errors);
-
-        // If we're missing any of the above fields, then we can't proceed any further
-        if (count($errors) > 0) {
+        if (!$result->isValid()) {
             $this->setStatusCode(500);
-            $this->setStatusText(implode("\n", $errors));
+            $this->setStatusText(Api\Helper::getValidationResultsAsJson($result));
 
             return;
         }
@@ -150,8 +144,6 @@ class Result
         $this->setStatusCode($contents->statusCode);
         $this->setStatusText($contents->statusText);
 
-        $data = $contents->data;
-
         // Status codes in the 1xx and 2xx ranges are valid, anything outside of those are an error
         if ($this->getStatusCode() < 100 || $this->getStatusCode() >= 300) {
             return;
@@ -159,38 +151,40 @@ class Result
 
         // Status codes in the 1xx indicate that the test is still processing
         if ($this->getStatusCode() >= 100 && $this->getStatusCode() < 200) {
-            $this->hydratePendingResult($data);
+            $this->hydratePendingResult($contents);
 
             $this->invokeWithExtensions('updateResultAfterHydratePending', $this);
 
             return;
         }
 
-        $this->hydrateCompletedResult($data);
+        $this->hydrateCompletedResult($contents);
 
         $this->invokeWithExtensions('updateResultAfterHydrateCompleted', $this);
     }
 
     /**
-     * @param stdClass $data
+     * @param stdClass $contents
      */
-    protected function hydratePendingResult(stdClass $data): void
+    protected function hydratePendingResult(stdClass $contents): void
     {
-        $errors = [];
+        // Validate that we have a valid basic response with codes and data
+        $schema = JsonSchema\Schema::fromJsonString(file_get_contents(__DIR__ . '/../../schema/result-pending.json'));
 
-        if (!property_exists($data, 'testId')) {
-            $errors[] = 'No "testId" property provided';
-        }
+        $validator = new JsonSchema\Validator();
 
-        if (!property_exists($data, 'testsExpected')) {
-            $errors[] = 'No "testsExpected" property provided';
-        }
+        /** @var JsonSchema\ValidationResult $result */
+        $result = $validator->schemaValidation($contents, $schema);
 
-        // If we're missing any of the above fields, then we can't proceed any further
-        if (count($errors) > 0) {
+        if (!$result->isValid()) {
             $this->setStatusCode(500);
-            $this->setStatusText(implode("\n", $errors));
+            $this->setStatusText(Api\Helper::getValidationResultsAsJson($result));
+
+            return;
         }
+
+        /** @var stdClass $data */
+        $data = $contents->data;
 
         if (property_exists($data, 'behindCount')) {
             $this->setBehindCount($data->behindCount);
@@ -201,67 +195,27 @@ class Result
     }
 
     /**
-     * @param stdClass $data
+     * @param stdClass $contents
      */
-    protected function hydrateCompletedResult(stdClass $data): void
+    protected function hydrateCompletedResult(stdClass $contents): void
     {
-        $errors = [];
+        // Validate that we have a valid basic response with codes and data
+        $schema = JsonSchema\Schema::fromJsonString(file_get_contents(__DIR__ . '/../../schema/result-completed.json'));
 
-        if (!property_exists($data, 'bwDown')) {
-            $errors[] = 'No "bwDown" property provided';
-        }
+        $validator = new JsonSchema\Validator();
 
-        if (!property_exists($data, 'bwUp')) {
-            $errors[] = 'No "bwUp" property provided';
-        }
+        /** @var JsonSchema\ValidationResult $result */
+        $result = $validator->schemaValidation($contents, $schema);
 
-        if (!property_exists($data, 'completed')) {
-            $errors[] = 'No "completed" property provided';
-        }
-
-        if (!property_exists($data, 'connectivity')) {
-            $errors[] = 'No "connectivity" property provided';
-        }
-
-        if (!property_exists($data, 'fvonly')) {
-            $errors[] = 'No "fvonly" property provided';
-        }
-
-        if (!property_exists($data, 'latency')) {
-            $errors[] = 'No "latency" property provided';
-        }
-
-        if (!property_exists($data, 'location')) {
-            $errors[] = 'No "location" property provided';
-        }
-
-        if (!property_exists($data, 'mobile')) {
-            $errors[] = 'No "mobile" property provided';
-        }
-
-        if (!property_exists($data, 'plr')) {
-            $errors[] = 'No "plr" property provided';
-        }
-
-        if (!property_exists($data, 'testRuns')) {
-            $errors[] = 'No "testRuns" property provided';
-        }
-
-        if (!property_exists($data, 'url')) {
-            $errors[] = 'No "url" property provided';
-        }
-
-        if (!property_exists($data, 'runs')) {
-            $errors[] = 'No "runs" property provided';
-        }
-
-        // If we're missing any of the above fields, then we can't proceed any further
-        if (count($errors) > 0) {
+        if (!$result->isValid()) {
             $this->setStatusCode(500);
-            $this->setStatusText(implode("\n", $errors));
+            $this->setStatusText(Api\Helper::getValidationResultsAsJson($result));
 
             return;
         }
+
+        /** @var stdClass $data */
+        $data = $contents->data;
 
         $this->setBandwidthDown($data->bwDown);
         $this->setBandwidthUp($data->bwUp);
