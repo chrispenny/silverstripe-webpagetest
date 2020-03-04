@@ -2,7 +2,9 @@
 
 namespace ChrisPenny\WebPageTest\Submission;
 
+use ChrisPenny\WebPageTest\Api;
 use GuzzleHttp\Psr7\Response;
+use Opis\JsonSchema;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use stdClass;
@@ -68,11 +70,11 @@ class Result
      */
     public function hydrateFromResponse(Response $response): void
     {
-        /** @var string $contents */
-        $contents = $response->getBody()->getContents();
+        /** @var string $payload */
+        $payload = $response->getBody()->getContents();
 
         // We can't do anything if there is no response contents
-        if (strlen($contents) === 0) {
+        if (strlen($payload) === 0) {
             $this->setStatusCode(500);
             $this->setStatusText('No response content available');
 
@@ -80,28 +82,21 @@ class Result
         }
 
         /** @var stdClass $contents */
-        $contents = json_decode($contents);
-        $errors = [];
+        $contents = json_decode($payload);
 
-        if (!property_exists($contents, 'statusCode')) {
-            $errors[] = 'No "statusCode" property provided';
-        }
+        // Validate that we have a valid basic response with codes and data
+        $schema = JsonSchema\Schema::fromJsonString(file_get_contents(__DIR__ . '/../../schema/status.json'));
 
-        if (!property_exists($contents, 'statusText')) {
-            $errors[] = 'No "statusText" property provided';
-        }
+        $validator = new JsonSchema\Validator();
+        $result = $validator->schemaValidation($contents, $schema);
 
-        $this->invokeWithExtensions('updateErrorsBeforeTopLevelFailure', $errors);
-
-        // If we're missing any of the above fields, then we can't proceed any further
-        if (count($errors) > 0) {
+        if (!$result->isValid()) {
             $this->setStatusCode(500);
-            $this->setStatusText(implode("\n", $errors));
+            $this->setStatusText(Api\Helper::getValidationResultsAsJson($result));
 
             return;
         }
 
-        // Set status results
         $this->setStatusCode($contents->statusCode);
         $this->setStatusText($contents->statusText);
 
@@ -109,55 +104,19 @@ class Result
             return;
         }
 
-        // Start adding errors if any top level required fields are missing
-        if (!property_exists($contents, 'data')) {
+        $schema = JsonSchema\Schema::fromJsonString(file_get_contents(__DIR__ . '/../../schema/submission.json'));
+
+        $result = $validator->schemaValidation($contents, $schema);
+
+        if (!$result->isValid()) {
             $this->setStatusCode(500);
-            $this->setStatusText('No "data" property provided');
+            $this->setStatusText(Api\Helper::getValidationResultsAsJson($result));
 
             return;
         }
 
         /** @var stdClass $data */
         $data = $contents->data;
-
-        // Start adding errors if any top level required fields are missing
-        if (!property_exists($data, 'detailCSV')) {
-            $errors[] = 'No "detailCSV" property provided';
-        }
-
-        if (!property_exists($data, 'jsonUrl')) {
-            $errors[] = 'No "jsonUrl" property provided';
-        }
-
-        if (!property_exists($data, 'ownerKey')) {
-            $errors[] = 'No "ownerKey" property provided';
-        }
-
-        if (!property_exists($data, 'summaryCSV')) {
-            $errors[] = 'No "summaryCSV" property provided';
-        }
-
-        if (!property_exists($data, 'testId')) {
-            $errors[] = 'No "testId" property provided';
-        }
-
-        if (!property_exists($data, 'userUrl')) {
-            $errors[] = 'No "userUrl" (result overview url) property provided';
-        }
-
-        if (!property_exists($data, 'xmlUrl')) {
-            $errors[] = 'No "xmlUrl" property provided';
-        }
-
-        $this->invokeWithExtensions('updateErrorsBeforeSecondLevelFailure', $errors);
-
-        // If we're missing any of the above fields, then we can't proceed any further
-        if (count($errors) > 0) {
-            $this->setStatusCode(500);
-            $this->setStatusText(implode("\n", $errors));
-
-            return;
-        }
 
         // Set contents results
         $this->setDetailCsvUrl($data->detailCSV);
@@ -169,8 +128,6 @@ class Result
         $this->setXmlUrl($data->xmlUrl);
 
         $this->invokeWithExtensions('updateResultAfterHydration', $this);
-
-        return;
     }
 
     /**

@@ -111,11 +111,11 @@ class Result
      */
     public function hydrateFromResponse(Response $response): void
     {
-        /** @var string $contents */
-        $contents = $response->getBody()->getContents();
+        /** @var string $payload */
+        $payload = $response->getBody()->getContents();
 
         // We can't do anything if there is no response contents
-        if (strlen($contents) === 0) {
+        if (strlen($payload) === 0) {
             $this->setStatusCode(500);
             $this->setStatusText('No response content available');
 
@@ -123,7 +123,7 @@ class Result
         }
 
         /** @var stdClass $contents */
-        $contents = json_decode($contents);
+        $contents = json_decode($payload);
 
         // Validate that we have a valid basic response with codes and data
         $schema = JsonSchema\Schema::fromJsonString(file_get_contents(__DIR__ . '/../../schema/status.json'));
@@ -168,7 +168,6 @@ class Result
      */
     protected function hydratePendingResult(stdClass $contents): void
     {
-        // Validate that we have a valid basic response with codes and data
         $schema = JsonSchema\Schema::fromJsonString(file_get_contents(__DIR__ . '/../../schema/result-pending.json'));
 
         $validator = new JsonSchema\Validator();
@@ -199,7 +198,6 @@ class Result
      */
     protected function hydrateCompletedResult(stdClass $contents): void
     {
-        // Validate that we have a valid basic response with codes and data
         $schema = JsonSchema\Schema::fromJsonString(file_get_contents(__DIR__ . '/../../schema/result-completed.json'));
 
         $validator = new JsonSchema\Validator();
