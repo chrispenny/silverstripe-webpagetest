@@ -8,6 +8,7 @@ use SilverStripe\Forms\Form;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldAddNewButton;
 use SilverStripe\Forms\GridField\GridFieldExportButton;
+use SilverStripe\Forms\GridField\GridFieldFilterHeader;
 use SilverStripe\Forms\GridField\GridFieldImportButton;
 use SilverStripe\Forms\GridField\GridFieldPrintButton;
 
@@ -52,17 +53,17 @@ class Admin extends ModelAdmin
         $form = parent::getEditForm($id, $fields);
 
         /** @var GridField $gridField */
-        $gridField = $form->Fields()->fieldByName('ChrisPenny-WebPageTest-SubmitTest-Model');
+        $gridField = $form->Fields()->fieldByName('ChrisPenny-WebPageTest-Submission-Model');
 
         if ($gridField) {
             $config = $gridField->getConfig();
 
             $config->removeComponentsByType([
-                GridFieldImportButton::class,
-//                GridFieldFilterHeader::class,
-                GridFieldPrintButton::class,
-                GridFieldExportButton::class,
                 GridFieldAddNewButton::class,
+                GridFieldExportButton::class,
+                GridFieldFilterHeader::class,
+                GridFieldImportButton::class,
+                GridFieldPrintButton::class,
             ]);
         }
 
